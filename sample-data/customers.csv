@@ -1,0 +1,5 @@
+name,email,msisdn,planType
+Karthik R,karthik@example.com,9988776655,PREPAID
+"Rao, Venkat",venkat@example.com,9000012345,POSTPAID
+Meena V,meena@example.com,9876501234,postpaid
+Ravi T,ravi@example.com,9765432109,PREPAID

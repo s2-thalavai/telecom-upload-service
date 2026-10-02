@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Telecom KYC Desk – Document Uploads</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header class="top">
+  <h1>KYC desk</h1>
+  <p>Upload customer documents, check what is on file, and onboard customers in bulk from a CSV.</p>
+</header>
+
+<main class="layout">
+  <section class="card" aria-labelledby="customer-title">
+    <h2 id="customer-title">Customer</h2>
+    <label for="customer">Choose a customer</label>
+    <select id="customer"><option value="">Loading…</option></select>
+    <p id="customer-meta" class="muted"></p>
+
+    <h2 class="spaced">Add a document</h2>
+    <label for="doc-type">Document type</label>
+    <select id="doc-type">
+      <option value="ID_PROOF">ID proof</option>
+      <option value="ADDRESS_PROOF">Address proof</option>
+      <option value="PHOTO">Photo</option>
+      <option value="CONTRACT">Contract</option>
+      <option value="OTHER">Other</option>
+    </select>
+
+    <label for="description">Description (optional)</label>
+    <input id="description" maxlength="255" placeholder="e.g. Government ID, front side">
+
+    <label class="sim" for="file" id="drop-zone">
+      <input id="file" type="file" accept="application/pdf,image/png,image/jpeg">
+      <span class="sim-text" id="drop-text">Drop a PDF, PNG or JPEG here, or choose a file</span>
+    </label>
+
+    <fieldset>
+      <legend>Send it as</legend>
+      <label class="choice"><input type="radio" name="mode" value="multipart" checked> Multipart form (up to 20 MB)</label>
+      <label class="choice"><input type="radio" name="mode" value="stream"> Raw stream (up to 200 MB)</label>
+    </fieldset>
+
+    <button id="upload" class="primary" type="button" disabled>Upload document</button>
+    <progress id="progress" max="100" value="0" hidden></progress>
+    <p id="upload-status" class="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="card wide" aria-labelledby="docs-title">
+    <h2 id="docs-title">Documents on file</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr><th>Type</th><th>File</th><th>Size</th><th>Uploaded</th><th><span class="sr-only">Actions</span></th></tr>
+        </thead>
+        <tbody id="docs"><tr><td colspan="5" class="muted">Choose a customer to see their documents.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card wide" aria-labelledby="import-title">
+    <h2 id="import-title">Bulk onboarding</h2>
+    <p class="muted">CSV with the header <code>name,email,msisdn,planType</code>. Valid rows are imported; invalid rows are listed with their line numbers.</p>
+    <div class="row">
+      <input id="csv" type="file" accept=".csv,text/csv" aria-label="CSV file">
+      <button id="import" class="primary" type="button">Import customers</button>
+    </div>
+    <div id="import-result" role="status" aria-live="polite"></div>
+  </section>
+</main>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+name,email,msisdn,planType
+Good Row,goodrow@example.com,9811111111,PREPAID
+Bad Email,not-an-email,9822222222,PREPAID
+Bad Plan,badplan@example.com,9833333333,GOLD
+Short Phone,short@example.com,12345,PREPAID
+Dup Email,GOODROW@example.com,9844444444,POSTPAID
+Too,Few,Columns

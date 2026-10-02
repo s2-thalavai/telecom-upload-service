@@ -1,0 +1,92 @@
+### Telecom upload API – IntelliJ HTTP Client / VS Code REST Client
+@base = http://localhost:8080/api/v1/customers
+
+### Customers
+GET {{base}}
+
+### Create customer (JSON)
+POST {{base}}
+Content-Type: application/json
+
+{"name":"Karthik R","email":"karthik@example.com","msisdn":"9988776655","planType":"PREPAID"}
+
+### Upload one document (multipart)
+POST {{base}}/1/documents
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="type"
+
+ID_PROOF
+--BOUNDARY
+Content-Disposition: form-data; name="description"
+
+Government ID
+--BOUNDARY
+Content-Disposition: form-data; name="file"; filename="sample-id-proof.pdf"
+Content-Type: application/pdf
+
+< ./sample-data/sample-id-proof.pdf
+--BOUNDARY--
+
+### Batch upload with a JSON metadata part
+POST {{base}}/1/documents/batch
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{"type":"ADDRESS_PROOF","description":"Utility bills"}
+--BOUNDARY
+Content-Disposition: form-data; name="files"; filename="bill.pdf"
+Content-Type: application/pdf
+
+< ./sample-data/sample-id-proof.pdf
+--BOUNDARY--
+
+### Streaming upload (raw body)
+POST {{base}}/1/documents/stream?type=CONTRACT
+Content-Type: application/pdf
+X-Filename: contract.pdf
+
+< ./sample-data/sample-id-proof.pdf
+
+### List documents
+GET {{base}}/1/documents
+
+### Download
+GET {{base}}/1/documents/1
+
+### Partial download (Range)
+GET {{base}}/1/documents/1
+Range: bytes=0-99
+
+### Delete
+DELETE {{base}}/1/documents/1
+
+### Disguised executable -> 415
+POST {{base}}/1/documents
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="type"
+
+OTHER
+--BOUNDARY
+Content-Disposition: form-data; name="file"; filename="fake-invoice.pdf"
+Content-Type: application/pdf
+
+< ./sample-data/fake-invoice.pdf
+--BOUNDARY--
+
+### Bulk CSV import
+POST {{base}}/import
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="file"; filename="customers-with-errors.csv"
+Content-Type: text/csv
+
+< ./sample-data/customers-with-errors.csv
+--BOUNDARY--

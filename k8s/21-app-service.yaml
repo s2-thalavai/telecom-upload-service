@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telecom-upload-service
+  namespace: telecom-upload
+spec:
+  selector:
+    app: telecom-upload-service
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,0 +1,13 @@
+# Uploaded documents. ReadWriteOnce => the app runs as a single replica (see deployment).
+# To scale out: use a ReadWriteMany class (e.g. Azure Files, EFS, NFS) or swap
+# FileSystemStorageService for an object-storage implementation (S3 / Azure Blob).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: telecom-uploads
+  namespace: telecom-upload
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telecom-upload-service
+  namespace: telecom-upload
+  labels:
+    app: telecom-upload-service
+spec:
+  replicas: 1                      # RWO upload volume; see 15-uploads-pvc.yaml to scale
+  strategy:
+    type: Recreate                 # release the RWO volume before the new pod mounts it
+  selector:
+    matchLabels:
+      app: telecom-upload-service
+  template:
+    metadata:
+      labels:
+        app: telecom-upload-service
+    spec:
+      terminationGracePeriodSeconds: 60      # let in-flight uploads finish (graceful shutdown)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001                       # makes the mounted volume writable by the app user
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z mysql 3306; do echo waiting for mysql; sleep 3; done"]
+      containers:
+        - name: app
+          image: telecom-upload-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: telecom-upload-config
+            - secretRef:
+                name: telecom-upload-db
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { memory: 1Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/data/uploads
+            - name: tmp
+              mountPath: /app/tmp            # multipart temp files
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: telecom-uploads
+        - name: tmp
+          emptyDir:
+            sizeLimit: 2Gi

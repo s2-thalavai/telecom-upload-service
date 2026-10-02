@@ -1,0 +1,25 @@
+# ingress-nginx defaults to a 1MB body limit: raise it to the largest upload you accept,
+# and stream request bodies to the app instead of buffering them in the proxy.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: telecom-upload-ingress
+  namespace: telecom-upload
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: telecom-upload.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: telecom-upload-service
+                port:
+                  name: http
